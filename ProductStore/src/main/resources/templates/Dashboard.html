@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Product Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body>
+    <div class="container-fluid">
+    	<div class="row">
+    		<div class="col-md-12">
+    			<div class="card mt-2">
+    				<div class="card-head p-2 bg-light">
+    					<h3 class="text-center text-danger fw-bold heading fs-1">Product Store</h3>
+    				</div>
+    				<div class="card-body table-responsive">
+    					<div class="row my-2">
+    						<div class="col-md-2">
+    							<a th:href="@{/addProduct}" class="btn btn-primary my-2">Add product</a>
+    						</div>
+    						<div class="col-md-6">
+    						</div>
+    						<div class="col-md-4">
+    							<div class="row">
+									<div class="col-md-10 offset-md-2">
+										<form th:action="@{/search}" method="get">
+											<div class="input-group">
+												<input type="text" class="form-control" name="ch"/>
+												<button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+											</div>
+										</form>
+									</div>
+								</div>
+    						</div>
+    					</div>
+    					<!-- alert messages -->
+    					<div class="alert alert-success" th:if="${session.successMsg}">
+    						<p class="text-center fw-bold">[[${session.successMsg}]]</p>
+    						<th:block th:text="${@IProductServiceImpl.removeSessionMessage()}"></th:block>
+    					</div>
+    					<div class="alert alert-success" th:if="${session.failMsg}">
+    						<p class="text-center fw-bold">[[${session.failMsg}]]</p>
+    						<th:block th:text="${@IProductServiceImpl.removeSessionMessage()}"></th:block>
+    					</div>
+    					<div class="alert alert-warning" th:if="${session.warningMsg}">
+    						<p class="text-center fw-bold">[[${session.warningMsg}]]</p>
+    						<th:block th:text="${@IProductServiceImpl.removeSessionMessage()}"></th:block>
+    					</div>
+    					<!-- alert messsage ends -->
+    					<table class="table table-hover">
+    						<tr class="table-dark">
+    							<th>ID</th>
+    							<th>Name</th>
+    							<th>Brand</th>
+    							<th>Category</th>
+    							<th>Price</th>
+    							<th>Image</th>
+    							<th>Created At</th>
+    							<th>Action</th>
+    						</tr>
+    						<tr th:if="${products.size()==0}">
+    							<td class="text-danger text-center fw-bold fs-5" colspan="8">Products are not available</td>
+    						</tr>
+    						<tr th:each="product : ${products}" th:unless="${products.size()==0}">
+    							<td th:text="${product.id}"></td>
+    							<td th:text="${product.name}"></td>
+    							<td th:text="${product.brand}"></td>
+    							<td th:text="${product.category}"></td>
+    							<td th:text="${product.price}"></td>
+    							<td><img th:src="@{'/images/products/'+${product.imageFileName}}" height="70px" width="70px" class="img-fluid"></td>
+    							<td th:text="${#dates.format(product.createdAt, 'dd/MM/yyyy')}"></td>
+    							<td>
+    								<a th:href="@{'/editProduct/'+${product.id}}" class="btn btn-success btn-sm"><i class="fa-solid fa-pen-nib"></i> Edit</a>
+    								<a th:onclick="'deleteProduct (' + ${product.id} + ')'" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Remove</a>
+    							</td>
+    						</tr>
+    					</table>
+    					<div th:if="${products.size()!=0 && isSearch==false}" class="d-flex justify-content-center mt-3">
+    						<nav aria-label="Page navigation example">
+							  <ul class="pagination">
+							    <li th:if="${currentPage!=0}"><a class="page-link" th:href="@{'/dashboard?pageNo='+${currentPage-1}}">Previous</a></li>
+							    <li class="page-item" th:each=" i :${#numbers.sequence(1, totalPages)}" th:classappend="${currentPage==i-1 ? 'active' : ''}"><a class="page-link" th:href="@{'/dashboard?pageNo='+${i-1}}">[[${i}]]</a></li>
+							    <li th:if="${currentPage+1!=totalPages}" class="page-item"><a class="page-link" th:href="@{'/dashboard?pageNo=' + ${currentPage+1}}">Next</a></li>
+							  </ul>
+							</nav>	
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script>
+	    function deleteProduct(id) {
+	        swal({
+	            title: "Are you sure?",
+	            text: "You want to delete this product!",
+	            icon: "warning",
+	            buttons: true,
+	            dangerMode: true,
+	        })
+	        .then((willDelete) => {
+	            if (willDelete) {
+	                window.location = "/deleteProduct/" + id;  
+	            } else {
+	                swal("Your product is safe!");
+	            }
+	        });
+	    }
+	</script>
+  </body>
+</html>
