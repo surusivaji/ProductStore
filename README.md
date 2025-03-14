@@ -75,7 +75,7 @@ http://localhost:8080
 ![delete product](deleteproduct.png)
 <hr>
 
-<h4 alight="center"> 💡 Developed with ❤️ using Spring Boot & MySQL </h4>
+<h4 align="center"> 💡 Developed with ❤️ using Spring Boot & MySQL </h4>
 
 
 
