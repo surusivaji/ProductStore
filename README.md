@@ -72,10 +72,10 @@ http://localhost:8080
 ![search product](searchproduct.png)
 
 ### 📌 Delete Product Page
-![delete product](delteproduct.png)
+![delete product](deleteproduct.png)
+<hr>
 
-
-### 💡 Developed with ❤️ using Spring Boot & MySQL
+<h4 alight="center"> 💡 Developed with ❤️ using Spring Boot & MySQL </h4>
 
 
 
